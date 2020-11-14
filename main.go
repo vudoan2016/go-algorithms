@@ -1,134 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-type Id int
-type Weight int
-
-// Directed weighted graph
-type Node struct {
-	id      Id
-	visited bool
-	edges   map[Id]Weight
-}
-
-type Graph struct {
-	nodes map[Id]*Node
-}
-
-func New() *Graph {
-	return &Graph{
-		nodes: map[Id]*Node{},
-	}
-}
-
-func (g *Graph) addNode(id Id) {
-	g.nodes[id] = &Node{id: id, edges: make(map[Id]Weight)}
-}
-
-// Edge points from 'fromId' to 'toId'
-func (g *Graph) addEdge(fromId Id, toId Id, weight Weight) {
-	g.nodes[fromId].edges[toId] = weight
-}
-
-func (g Graph) print() {
-	for _, n := range g.nodes {
-		fmt.Printf("Node %d: ", n.id)
-		for toId, w := range n.edges {
-			fmt.Printf("[%d, %d] ", toId, w)
-		}
-		fmt.Println()
-	}
-}
-
-func (g Graph) traverseHelper(source Id, stack *[]Id) {
-	if _, found := g.nodes[source]; !found {
-		return
-	}
-	g.nodes[source].visited = true
-	*stack = append(*stack, source)
-
-	for neighbor := range g.nodes[source].edges {
-		if !g.nodes[neighbor].visited {
-			g.traverseHelper(neighbor, stack)
-			if (*stack)[0] == source {
-				fmt.Println(*stack)
-				*stack = (*stack)[:1]
-			}
-		}
-	}
-}
-
-func (g Graph) dfTraverse(root Id) {
-	for _, n := range g.nodes {
-		n.visited = false
-	}
-	var stack []Id
-	g.traverseHelper(root, &stack)
-}
-
-func (g Graph) dfsHelper(root, key Id) bool {
-	if root == key {
-		return true
-	}
-	g.nodes[root].visited = true
-	for neighbor := range g.nodes[root].edges {
-		if !g.nodes[neighbor].visited {
-			if g.dfsHelper(neighbor, key) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func (g Graph) dfs(root, key Id) bool {
-	for _, n := range g.nodes {
-		n.visited = false
-	}
-	return g.dfsHelper(root, key)
-}
-
-// BFS is used to find SP between 2 vertices of an unweighted graph
-func (g Graph) bfsTraverse(root Id) {
-	for _, n := range g.nodes {
-		n.visited = false
-	}
-	q := []Id{}
-	q = append(q, root)
-	for len(q) > 0 {
-		fmt.Printf("%d ", q[0])
-		for neighbor := range g.nodes[q[0]].edges {
-			if !g.nodes[neighbor].visited {
-				g.nodes[q[0]].visited = true
-				q = append(q, neighbor)
-			}
-		}
-		q = q[1:]
-	}
-	fmt.Println()
-}
-
-func graphTest() {
-	g := New()
-	g.addNode(7)
-	g.addNode(11)
-	g.addNode(9)
-	g.addNode(28)
-	g.addNode(5)
-	g.addEdge(7, 11, 4)
-	g.addEdge(11, 9, 6)
-	g.addEdge(9, 28, 8)
-	g.addEdge(7, 5, 6)
-	g.addEdge(5, 28, 2)
-	g.print()
-	g.dfTraverse(7)
-	root := Id(11)
-	key := Id(5)
-	fmt.Printf("Key %d found: %t\n", key, g.dfs(root, key))
-
-	g.bfsTraverse(7)
-}
+	graph "github.com/vudoan2016/go-algorithms/graph"
+)
 
 // with memoization
 func fibo(n int, cnt *int, cache *[]int) int {
@@ -261,6 +137,6 @@ func main() {
 	//lengthOfLongestSubstringTest()
 	//anagramTest()
 	//permutationTest()
-	fiboTest()
-	//graphTest()
+	//fiboTest()
+	graph.GraphTest()
 }
